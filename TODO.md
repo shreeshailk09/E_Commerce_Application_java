@@ -1,6 +1,0 @@
-- [x] Fix typo in handleRaadioFilterChange to handleRadioFilterChange
-- [x] Make RadioGroup controlled by adding value prop from searchParams.get(section.id)
-- [x] Move onChange from FormControlLabel to RadioGroup
-- [x] Set unique name for each RadioGroup
-- [x] Remove defaultValue from RadioGroup
-- [x] Update function call
