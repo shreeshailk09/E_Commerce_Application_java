@@ -20,6 +20,10 @@ options: [
 {value: "green", label: "Green"},
 {value: "purple", label: "Purple"},
 {value: "yellow", label: "Yellow"},
+{value: "black", label: "Black"},
+{value: "pink", label: "Pink"},
+{value: "red", label: "Red"},
+
 ],
 },
 {

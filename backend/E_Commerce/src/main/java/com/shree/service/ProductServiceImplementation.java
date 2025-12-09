@@ -35,37 +35,52 @@ public class ProductServiceImplementation implements ProductService{
    }
     @Override
     public Product createProduct(CreateProductRequest req) {
-        Category topLevel=categoryRepository.findByName(req.getTopLevelCategory());
+        // normalize inputs (avoid case/whitespace bugs)
+        String topName = req.getTopLevelCategory() == null ? "" : req.getTopLevelCategory().trim();
+        String secondName = req.getSecondLevelCategory() == null ? "" : req.getSecondLevelCategory().trim();
+        String thirdName = req.getThirdLevelCategory() == null ? "" : req.getThirdLevelCategory().trim();
 
-        if(topLevel==null){
-            Category topLevelCategory=new Category();
-            topLevelCategory.setName(req.getTopLevelCategory());
-            topLevelCategory.setLevel(1);
+        // 1) Find or create top-level (parentCategory IS NULL)
+        Category topLevel = categoryRepository
+                .findByNameIgnoreCaseAndParentCategoryIsNull(topName)
+                .orElseGet(() -> {
+                    Category c = new Category();
+                    c.setName(topName);
+                    c.setLevel(1);
+                    c.setParentCategory(null);
+                    return categoryRepository.save(c);
+                });
 
-            topLevel=categoryRepository.save(topLevelCategory);
-        }
+        // 2) Find or create second-level under top
+        Category secondLevel = categoryRepository
+                .findByNameIgnoreCaseAndParentCategory(secondName, topLevel)
+                .orElseGet(() -> {
+                    Category c = new Category();
+                    c.setName(secondName);
+                    c.setParentCategory(topLevel);
+                    c.setLevel(2);
+                    return categoryRepository.save(c);
+                });
 
-        Category secondLevel=categoryRepository.findByNameAndParent(req.getSecondLevelCategory(), topLevel.getName());
-        if(secondLevel==null){
-            Category secondLevelCategory=new Category();
-            secondLevelCategory.setName(req.getSecondLevelCategory());
-            secondLevelCategory.setParentCategory(topLevel);
-            secondLevelCategory.setLevel(2);
+        // 3) Find or create third-level under second
+        Category thirdLevel = categoryRepository
+                .findByNameIgnoreCaseAndParentCategory(thirdName, secondLevel)
+                .orElseGet(() -> {
+                    Category c = new Category();
+                    c.setName(thirdName);
+                    c.setParentCategory(secondLevel);
+                    c.setLevel(3);
+                    return categoryRepository.save(c);
+                });
 
-            secondLevel=categoryRepository.save(secondLevelCategory);
-        }
+        // Debug log: helpful to track which exact category id was resolved/created
+        System.out.printf("Resolved category chain: %s(id=%s) -> %s(id=%s) -> %s(id=%s)%n",
+                topLevel.getName(), topLevel.getId(),
+                secondLevel.getName(), secondLevel.getId(),
+                thirdLevel.getName(), thirdLevel.getId());
 
-        Category thirdLevel=categoryRepository.findByNameAndParent(req.getThirdLevelCategory(),secondLevel.getName());
-        if(thirdLevel==null){
-            Category thirdLevelCategory=new Category();
-            thirdLevelCategory.setName(req.getThirdLevelCategory());
-            thirdLevelCategory.setParentCategory(secondLevel);
-            thirdLevelCategory.setLevel(3);
-
-            thirdLevel=categoryRepository.save(thirdLevelCategory);
-        }
-
-        Product product =new Product();
+        // Build and save Product
+        Product product = new Product();
         product.setTitle(req.getTitle());
         product.setColor(req.getColor());
         product.setBrand(req.getBrand());
@@ -79,10 +94,9 @@ public class ProductServiceImplementation implements ProductService{
         product.setCategory(thirdLevel);
         product.setCreatedAt(LocalDateTime.now());
 
-        Product savedProduct=productRepository.save(product);
-
-        return savedProduct;
+        return productRepository.save(product);
     }
+
 
 
     @Override

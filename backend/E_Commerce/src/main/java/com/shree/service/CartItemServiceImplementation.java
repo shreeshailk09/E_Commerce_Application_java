@@ -85,4 +85,47 @@ public class CartItemServiceImplementation implements CartItemService{
 
         throw new CartItemException("cartItem not found with id-"+cartItemId);
     }
+
+    @Override
+    public CartItem updateCartItemQuantity(Long userId, Long cartItemId, Integer quantity) throws CartItemException, UserException {
+        if (quantity == null || quantity < 1) {
+            throw new CartItemException("Quantity must be at least 1");
+        }
+
+        // 1) Find the cart item
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new CartItemException("Cart item not found with id: " + cartItemId));
+
+
+        if (cartItem.getCart() == null
+                || cartItem.getCart().getUser() == null
+                || !cartItem.getCart().getUser().getId().equals(userId)) {
+            throw new UserException("Cart item does not belong to the current user");
+        }
+
+        // 3) Update quantity
+        cartItem.setQuantity(quantity);
+
+        
+        Product product = cartItem.getProduct();
+        if (product != null) {
+            Integer price = product.getPrice();              // change to correct type/name
+            Integer discountedPrice = product.getDiscountPrice(); // adjust to your model
+
+            if (price != null) {
+                cartItem.setPrice(price * quantity); // if you have this field
+            }
+            if (discountedPrice != null) {
+                cartItem.setDiscountedPrice(discountedPrice * quantity); // field name may differ
+            }
+        }
+
+        // 5) Save the updated cart item
+        CartItem saved = cartItemRepository.save(cartItem);
+
+        // 6) (Optional) Recalculate cart totals if your CartService has such a method
+        // cartService.calculateCartTotals(saved.getCart());
+
+        return saved;
+    }
 }

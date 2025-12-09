@@ -1,8 +1,10 @@
 package com.shree.controller;
 
+import com.shree.exception.CartItemException;
 import com.shree.exception.ProductException;
 import com.shree.exception.UserException;
 import com.shree.model.Cart;
+import com.shree.model.CartItem;
 import com.shree.model.User;
 import com.shree.request.AddItemRequest;
 import com.shree.response.ApiResponse;
@@ -35,7 +37,7 @@ public class CartController {
         return new ResponseEntity<Cart>(cart, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{cartItemId}")
+    @DeleteMapping("/cart_items/{cartItemId}")
     public ResponseEntity<ApiResponse> deleteCartItem(@RequestHeader("Authorization")String jwt,
                                                @PathVariable Long cartItemId) throws UserException,ProductException{
         User user=userService.findUserprofileByJwt(jwt);
@@ -56,4 +58,23 @@ public class CartController {
         res.setStatus(true);
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
+
+    @PutMapping("/cart_items/{cartItemId}")
+    public ResponseEntity<CartItem> updateCartItem(
+            @RequestHeader("Authorization") String jwt,
+            @PathVariable Long cartItemId,
+            @RequestParam Integer quantity
+    ) throws UserException, CartItemException {
+
+        User user = userService.findUserprofileByJwt(jwt);
+
+        CartItem updatedItem =
+                cartItemService.updateCartItemQuantity(user.getId(), cartItemId, quantity);
+
+        return new ResponseEntity<>(updatedItem, HttpStatus.OK);
+    }
+
+
+
+
 }

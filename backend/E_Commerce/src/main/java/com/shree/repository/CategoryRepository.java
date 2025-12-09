@@ -2,13 +2,17 @@ package com.shree.repository;
 
 import com.shree.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
-public interface CategoryRepository extends JpaRepository<Category,Long> {
+import java.util.Optional;
 
-    public Category findByName(String name);
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    @Query("Select c from Category c where c.name=:name and c.parentCategory.name=:parentCategoryName")
-    public Category findByNameAndParent(@Param("name") String name, @Param("parentCategoryName") String parentCategoryName);
+    // find a top-level category (parent is null) by name (case-insensitive)
+    Optional<Category> findByNameIgnoreCaseAndParentCategoryIsNull(String name);
+
+    // find category by name (case-insensitive) and parent category entity
+    Optional<Category> findByNameIgnoreCaseAndParentCategory(String name, Category parent);
+
+    // convenience: find by name and parent id (if you prefer IDs somewhere)
+    Optional<Category> findByNameIgnoreCaseAndParentCategory_Id(String name, Long parentId);
 }

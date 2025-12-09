@@ -1,6 +1,6 @@
 import React from "react";
 
-const HoneSectionCard = ({product}) => {
+const HomeSectionCard = ({product}) => {
   return (
     <div className="cursor-pointer flex flex-col items-center bg-white shadow-lg p-4 rounded-lg overflow-hidden w-[15rem] m-3 border">
       <div className="h-[13rem] w-[10rem]">
@@ -11,7 +11,7 @@ const HoneSectionCard = ({product}) => {
         />
       </div>
 
-      <div classname="p-4">
+      <div className="p-4">
         <h3 className="text-lg font-medium text-gray-900 ">{product.brand}</h3>
         <p className="mt-2 text-gray-600 text-sm">
           {product.title}</p>
@@ -19,4 +19,4 @@ const HoneSectionCard = ({product}) => {
     </div>
   );
 };
-export default HoneSectionCard;
+export default HomeSectionCard;

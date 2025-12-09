@@ -16,23 +16,21 @@ import { AuthModal } from "../../Auth/AuthModal";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser, logout } from "../../../State/Auth/Action";
 
-
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function Navigation() {
-
   const [open, setOpen] = useState(false);
-  
+
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const openUserMenu = Boolean(anchorEl);
   const jwt = localStorage.getItem("jwt");
-  const navigate=useNavigate();
-  const {auth}=useSelector(store=>store);
-  const dispatch=useDispatch();
-  const location=useLocation();
+  const navigate = useNavigate();
+  const { auth } = useSelector((store) => store);
+  const dispatch = useDispatch();
+  const location = useLocation();
 
   const handleUserClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -46,42 +44,39 @@ export default function Navigation() {
   };
   const handleClose = () => {
     setOpenAuthModal(false);
-  
   };
 
   const handleCategoryClick = (category, section, item, close) => {
     navigate(`/${category.id}/${section.id}/${item.id}`);
     close();
   };
- 
-  const handleMyOrders=()=>{
-    navigate("/account/order")
-  }
-  const handleCart=()=>{
-    navigate("/cart")
+
+  const handleMyOrders = () => {
+    navigate("/account/order");
+  };
+  const handleCart = () => {
+    navigate("/cart");
   };
 
-  useEffect(()=>{
-    if(jwt){
-      dispatch(getUser(jwt))
+  useEffect(() => {
+    if (jwt) {
+      dispatch(getUser(jwt));
     }
-  },[jwt,auth.jwt])
-  
-  
-useEffect(()=>{
+  }, [jwt, auth.jwt]);
 
-  if(auth.user){
-    handleClose();
-  }
-  if(location.pathname==="/login"  || location.pathname==="/register"){
-    navigate(-1);
-  }
-},[auth.user])
+  useEffect(() => {
+    if (auth.user) {
+      handleClose();
+    }
+    if (location.pathname === "/login" || location.pathname === "/register") {
+      navigate(-1);
+    }
+  }, [auth.user]);
 
-const handleLogout=()=>{
-  dispatch(logout());
-  handleCloseUserMenu();
-}
+  const handleLogout = () => {
+    dispatch(logout());
+    handleCloseUserMenu();
+  };
 
   return (
     <div className="bg-white pb-10">
@@ -268,15 +263,24 @@ const handleLogout=()=>{
               </button>
 
               {/* Logo */}
-              <div className="ml-4 flex lg:ml-0 cursor-pointer">
+              <div
+                className="ml-4 flex items-center lg:ml-0 cursor-pointer"
+                onClick={() => navigate("/")}
+              >
+                <span className="sr-only">Shop Easy - Go to Homepage</span>
+
+              
+                <img
+                  src="/logo.png"
+                  alt="Shop Easy Logo"
+                 
+                  className="h-8 w-8 mr-2 rounded-full object-cover"
+                />
+
                 
-                  <span className="sr-only">Your Company</span>
-                  <img onClick={()=>navigate("/")}
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRycimncnZ-M-LyEBq4OZMa6-m6M6wv28_uMQ&s"
-                    alt="ShopwithShree"
-                    className="h-8 w-8 mr-2"
-                  />
-                
+                <span className="text-xl font-semibold tracking-tight text-gray-900">
+                  Shop Easy
+                </span>
               </div>
 
               {/* Flyout menus */}
@@ -448,13 +452,9 @@ const handleLogout=()=>{
                           "aria-labelledby": "basic-button",
                         }}
                       >
-                        <MenuItem >
-                          Profile
-                        </MenuItem>
-                        <MenuItem onClick={handleMyOrders}>
-                          My Orders
-                        </MenuItem>
-                        <MenuItem onClick={handleLogout} >Logout</MenuItem>
+                        <MenuItem>Profile</MenuItem>
+                        <MenuItem onClick={handleMyOrders}>My Orders</MenuItem>
+                        <MenuItem onClick={handleLogout}>Logout</MenuItem>
                       </Menu>
                     </div>
                   ) : (
@@ -469,10 +469,9 @@ const handleLogout=()=>{
 
                 {/* Search */}
                 <div className="flex items-center lg:ml-6">
-                
-                  <p  className="p-2 text-gray-400 hover:text-gray-500">
+                  <p className="p-2 text-gray-400 hover:text-gray-500">
                     <span className="sr-only">Search</span>
-                    
+
                     <MagnifyingGlassIcon
                       className="h-6 w-6"
                       aria-hidden="true"
@@ -482,8 +481,8 @@ const handleLogout=()=>{
 
                 {/* Cart */}
                 <div className="ml-4 flow-root lg:ml-6">
-                  <Button onClick={handleCart}
-                    
+                  <Button
+                    onClick={handleCart}
                     className="group -m-2 flex items-center p-2"
                   >
                     <ShoppingBagIcon
@@ -501,7 +500,7 @@ const handleLogout=()=>{
           </div>
         </nav>
       </header>
-      <AuthModal open={openAuthModal} handleClose={handleClose}/>
+      <AuthModal open={openAuthModal} handleClose={handleClose} />
     </div>
   );
 }
