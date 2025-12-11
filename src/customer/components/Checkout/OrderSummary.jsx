@@ -5,6 +5,7 @@ import { Button } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrderById } from "../../../State/Order/Action";
 import { useLocation } from "react-router-dom";
+import { createPayment } from "../../../State/Payment/Action";
 
 const OrderSummary = () => {
   const dispatch = useDispatch();
@@ -25,6 +26,13 @@ const OrderSummary = () => {
   useEffect(() => {
     console.log("Order in Redux store:", order);
   }, [order]);
+
+
+  const handleCheckout=()=>{
+
+    dispatch(createPayment(orderId))
+    console.log("orderId:",orderId)
+  }
 
   const items = order?.orderItems || [];
   const shippingAddress = order?.shippingAddress;
@@ -118,7 +126,7 @@ const OrderSummary = () => {
               </div>
             </div>
 
-            <Button
+            <Button onClick={handleCheckout}
               variant="contained"
               fullWidth
               sx={{
