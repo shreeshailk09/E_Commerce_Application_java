@@ -18,17 +18,18 @@ const PaymentSuccess = () => {
 
     useEffect(()=>{
         const urlParam=new URLSearchParams(window.location.search);
-        setPaymentId(urlParam.get("razorpay_payment_link_id"))
+        setPaymentId(urlParam.get("razorpay_payment_id"))
         setPaymentStatus(urlParam.get("razorpay_payment_link_status"))
     },[])
 
      useEffect(()=>{
       const data={orderId,paymentId}
+      console.log("data-",data)
       if(orderId) dispatch(getOrderById(orderId));
       if(paymentId) dispatch(updatePayment(data));
      },[dispatch,orderId,paymentId])
 
-     const items = order?.items || [];
+     const items = order?.orderItems || [];
 
     return (
 
@@ -63,14 +64,14 @@ const PaymentSuccess = () => {
 
          {items.length === 0 ? (
            // fallback to the original placeholder appearance if no items
-           [1,2,2].map((item,i)=>(
+           items.map((item,i)=>(
             <Box key={i} className='shadow-xl rounded-md p-5 mb-4' sx={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
               <Box sx={{display:'flex',alignItems:'center',gap:2}}>
-                <Avatar variant='rounded' sx={{width:80,height:80}} src="https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQwIgy0P0G533wBCR_neoDZb0B8RK3iI4jedZPLdOGf2hL6LbjunSEGdKhpAue-7aOx8vC71kt6cbIjy4-mEelekUx6jQKswyom3Ou7j7y6" />
+                <Avatar variant='rounded' sx={{width:80,height:80}} src={item.product.imageUrl} />
                 <div>
                   <Typography sx={{fontWeight:600}}>Title</Typography>
                   <Typography variant='body2' sx={{color:'text.secondary'}}>Color: <strong>item.color</strong> · Size: <strong>item.size</strong></Typography>
-                  <Typography variant='body2' sx={{mt:1}}>Seller: <strong>item.product.brand</strong></Typography>
+                  <Typography variant='body2' sx={{mt:1}}>Seller: <strong>{item.product.brand}</strong></Typography>
                 </div>
               </Box>
 
@@ -90,7 +91,7 @@ const PaymentSuccess = () => {
            items.map((item, idx)=>(
              <Box key={item._id || item.id || idx} className='shadow-xl rounded-md p-5 mb-4' sx={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                <Box sx={{display:'flex',alignItems:'center',gap:2}}>
-                 <Avatar variant='rounded' sx={{width:80,height:80}} src={item.product?.images?.[0] || item.image} />
+                 <Avatar variant='rounded' sx={{width:80,height:80}} src={item.product?.imageUrl || item.image} />
                  <div>
                    <Typography sx={{fontWeight:600}}>{item.product?.title || item.title}</Typography>
                    <Typography variant='body2' sx={{color:'text.secondary'}}>Qty: {item.quantity || 1} · {item.color ? `Color: ${item.color}` : ''} {item.size ? `· Size: ${item.size}` : ''}</Typography>
@@ -101,13 +102,20 @@ const PaymentSuccess = () => {
                <div>
                  <Typography sx={{fontWeight:700}}>₹{item.price || item.product?.price || 0}</Typography>
                </div>
+               
              </Box>
            ))
          )}
 
        </Paper>
      </Grid>
-
+<Grid item xs={12} lg={4}>
+       <Paper elevation={3} className='p-5'>
+         <Typography variant='h6' sx={{mb:2}}>Shipping address</Typography>
+         <Divider sx={{mb:2}} />
+         <AddressCard address={order?.shippingAddress || {}}/>
+       </Paper>
+     </Grid>
      
 
     </Grid>

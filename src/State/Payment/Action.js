@@ -9,7 +9,6 @@ export const createPayment = (orderId) => async (dispatch) => {
 
     console.log("payment response:", res.data);
 
-    // Razorpay link coming from backend
     const url = res.data.payment_link_url;
 
     if (url) {
@@ -31,10 +30,10 @@ export const updatePayment=(reqData)=> async (dispatch)=>{
 
     dispatch({type:UPDATE_PAYMENT_REQUEST})
     try{
-      const data=await api.get(`/api/payments?=${reqData.orderId}&order_id=${reqData.orderId}`);
+      const data=await api.get(`/api/payments?payment_id=${reqData.paymentId}&order_id=${reqData.orderId}`);
 
       
-      console.log("update payment : -" , data)
+      console.log("update payment : -" , data.data)
     } catch(error){
        dispatch({type:CREATE_PAYMENT_FAILURE,payload:error.message})
     }
